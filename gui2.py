@@ -1,5 +1,4 @@
 from tkinter import *
-import random
 
 root = Tk()
 root.geometry('900x700')
