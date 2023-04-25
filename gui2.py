@@ -3,6 +3,7 @@ from tkinter import *
 root = Tk()
 root.geometry('900x700')
 root.title("GUI #2 !")
+# root.configure(bg = '#083605')
 
 # HIT Button 
 hit = Button(root, text = ' HIT ! ')
