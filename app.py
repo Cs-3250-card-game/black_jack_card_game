@@ -1,85 +1,89 @@
 import tkinter as tk
-from PIL import Image, ImageTk
 import random
 
-# Initialize the window
-window = tk.Tk()
-window.title("Blackjack")
+# Define constants
+CARD_WIDTH = 73
+CARD_HEIGHT = 97
+CARD_SPACING = 10
+DECK_SIZE = 52
+PLAYER_X = 20
+PLAYER_Y = 200
+DEALER_X = 20
+DEALER_Y = 20
 
-# Create a frame for the game
-game_frame = tk.Frame(window)
-game_frame.pack()
+# Create the main window
+root = tk.Tk()
+root.title("Blackjack")
 
-# Load the card images
+# Create the canvas
+canvas = tk.Canvas(root, width=800, height=600)
+canvas.pack()
+
+# Create a deck of cards
+deck = list(range(DECK_SIZE))
+random.shuffle(deck)
+
+# Create the player's hand
+player_hand = []
+player_score = 0
+
+# Create the dealer's hand
+dealer_hand = []
+dealer_score = 0
+
+# Create the card images
 card_images = {}
-suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
-ranks = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
+suits = ["hearts", "diamonds", "clubs", "spades"]
+ranks = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"]
 for suit in suits:
     for rank in ranks:
-        card_image = Image.open(f"cards/{rank}_of_{suit}.png")
-        card_image = card_image.resize((70, 100), Image.ANTIALIAS)
-        card_images[(rank, suit)] = ImageTk.PhotoImage(card_image)
+        filename = "cards/{}_{}.gif".format(rank, suit)
+        card_images[(rank, suit)] = tk.PhotoImage(file=filename)
 
-# Initialize the deck
-deck = [(rank, suit) for rank in ranks for suit in suits]
-
-# Initialize the player's and dealer's hands
-player_hand = []
-dealer_hand = []
-
-# Deal two cards to the player and dealer
+# Create the card labels
+player_card_labels = []
+dealer_card_labels = []
 for i in range(2):
-    player_card = random.choice(deck)
+    player_card = deck.pop()
     player_hand.append(player_card)
-    deck.remove(player_card)
-    dealer_card = random.choice(deck)
+    player_card_label = tk.Label(image=card_images[get_card(player_card)], bd=0)
+    player_card_label.place(x=PLAYER_X+i*(CARD_WIDTH+CARD_SPACING), y=PLAYER_Y)
+    player_card_labels.append(player_card_label)
+    player_score += get_card_value(player_card)
+
+    dealer_card = deck.pop()
     dealer_hand.append(dealer_card)
-    deck.remove(dealer_card)
+    dealer_card_label = tk.Label(image=card_images[get_card(dealer_card)], bd=0)
+    dealer_card_label.place(x=DEALER_X+i*(CARD_WIDTH+CARD_SPACING), y=DEALER_Y)
+    dealer_card_labels.append(dealer_card_label)
+    dealer_score += get_card_value(dealer_card)
 
-# Create labels for the cards
-player_card1_label = tk.Label(game_frame, image=card_images[player_hand[0]])
-player_card1_label.pack(side="left")
-player_card2_label = tk.Label(game_frame, image=card_images[player_hand[1]])
-player_card2_label.pack(side="left")
-dealer_card1_label = tk.Label(game_frame, image=card_images[dealer_hand[0]])
-dealer_card1_label.pack(side="left")
-dealer_card2_label = tk.Label(game_frame, image=card_images[("Back", "Red")])
-dealer_card2_label.pack(side="left")
-
-# Create a function to get the value of a card
-def get_card_value(card):
-    if card == "Ace":
-        return 11
-    elif card in ["Jack", "Queen", "King"]:
-        return 10
-    else:
-        return int(card)
-
-# Create a function for the player to hit
+# Create the hit button
 def hit():
-    global player_hand, deck
-    # Deal another card to the player
-    player_card = random.choice(deck)
-    player_hand.append(player_card)
-    deck.remove(player_card)
-    # Update the player's card labels
-    player_card_label = tk.Label(game_frame, image=card_images[player_card])
-    player_card_label.pack(side="left")
-    # Check if the player has gone over 21
-    if sum([get_card_value(card[0]) for card in player_hand]) > 21:
-        result_label.configure(text="You went over 21! Dealer wins.")
-        hit_button.configure(state="disabled")
-        stand_button.configure(state="disabled")
+    global player_score
+    if player_score < 21:
+        player_card = deck.pop()
+        player_hand.append(player_card)
+        player_card_label = tk.Label(image=card_images[get_card(player_card)], bd=0)
+        player_card_label.place(x=PLAYER_X+len(player_hand)*(CARD_WIDTH+CARD_SPACING), y=PLAYER_Y)
+        player_card_labels.append(player_card_label)
+        player_score += get_card_value(player_card)
+        if player_score > 21:
+            result_label.config(text="You went over 21. You lose.")
+            hit_button.config(state="disabled")
+            stand_button.config(state="disabled")
 
-# Create a function for the player to stand
+# Create the stand button
 def stand():
-    global dealer_hand, deck
-    # Reveal the dealer's hidden card
-    dealer_card2_label.configure(image=card_images[dealer_hand[1]])
-    # Deal cards to the dealer until their hand is greater than or equal to 17
-    while sum([get_card_value(card[0]) for card in dealer_hand]) < 17:
-        dealer_card = random.choice(deck)
+    global dealer_score
+    while dealer_score < 17:
+        dealer_card = deck.pop()
         dealer_hand.append(dealer_card)
-        deck.remove(dealer_card)
-    # Update the dealer's card labels
-    for i, card;
+        dealer_card_label = tk.Label(image=card_images[get_card(dealer_card)], bd=0)
+        dealer_card_label.place(x=DEALER_X+len(dealer_hand)*(CARD_WIDTH+CARD_SPACING), y=DEALER_Y)
+        dealer_card_labels.append(dealer_card_label)
+        dealer_score += get_card_value(dealer_card)
+    if dealer_score > 21:
+        result_label.config(text="Dealer went over 21. You win!")
+    elif dealer_score >= 17:
+        result_label.config(text="Dealer got 21")
