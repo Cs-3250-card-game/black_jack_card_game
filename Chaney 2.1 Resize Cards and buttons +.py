@@ -4,9 +4,31 @@ from PIL import Image, ImageTk
 import os
 
 root = Tk()
-root.title('Codemy.com - Card Deck')
+root.title('CS3250 Card Game - Card Deck')
 root.geometry("1200x800")
 root.configure(background="green")
+
+#get current working directory
+newDir = os.path.dirname(__file__)
+
+#set new working directory
+os.chdir(newDir)
+
+def resize_cards(card):
+	# Open the image
+	our_card_img = Image.open(card)
+
+	# Resize The Image
+	our_card_resize_image = our_card_img.resize((150, 218))
+	
+	# output the card
+	global our_card_image
+	our_card_image = ImageTk.PhotoImage(our_card_resize_image)
+
+	# Return that card
+	return our_card_image
+
+
 
 my_frame = Frame(root, bg="green")
 my_frame.pack(pady=20)
