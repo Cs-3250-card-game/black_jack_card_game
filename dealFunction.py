@@ -3,6 +3,8 @@ import random
 from PIL import Image, ImageTk
 import os
 
+#Code found from the following tutorial on YouTube by Codemy.com: https://www.youtube.com/watch?v=gBS2pYAGUgA
+
 root = Tk()
 root.title('CS3250 Card Game - Card Deck')
 root.geometry("1200x800")
