@@ -1,3 +1,5 @@
+#Name: Tri Nguyen
+
 from tkinter import *
 import random
 from PIL import Image, ImageTk

@@ -1,3 +1,5 @@
+# Name: Tri Nguyen
+
 from tkinter import *
 
 root = Tk()
